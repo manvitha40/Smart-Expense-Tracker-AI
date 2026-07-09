@@ -176,28 +176,4 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
-// @route   POST api/auth/toggle-role
-// @desc    Toggle current user role between user and admin (for testing)
-// @access  Private
-router.post('/toggle-role', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ msg: 'User not found' });
-
-    user.role = user.role === 'admin' ? 'user' : 'admin';
-    await user.save();
-
-    const userObj = user.toObject ? user.toObject() : { ...user };
-    delete userObj.password;
-
-    res.json({
-      msg: `Your role was updated to: ${user.role}. Please refresh or update context.`,
-      user: userObj
-    });
-  } catch (err) {
-    console.error('Toggle role error:', err.message);
-    res.status(500).send('Server error');
-  }
-});
-
 module.exports = router;

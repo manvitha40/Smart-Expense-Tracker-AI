@@ -23,8 +23,7 @@ import {
   RefreshCw,
   Zap,
   Trophy,
-  Users,
-  ShieldAlert
+  Users
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -51,7 +50,6 @@ export default function Sidebar() {
     { name: 'Receipt Scanner', path: '/receipt-scanner', icon: Camera },
     { name: 'Notifications', path: '/notifications', icon: Bell },
     { name: 'Settings', path: '/settings', icon: Settings },
-    { name: 'Admin Panel', path: '/admin', icon: ShieldAlert },
   ];
 
   const handleLogout = () => {

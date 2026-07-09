@@ -36,7 +36,6 @@ app.use('/api/import', require('./routes/import'));
 app.use('/api/goals', require('./routes/goals'));
 app.use('/api/subscriptions', require('./routes/subscriptions'));
 app.use('/api/init', require('./routes/init'));
-app.use('/api/admin', require('./routes/admin'));
 app.use('/api/email-notifications', require('./routes/emailNotifications'));
 
 // Root Route
