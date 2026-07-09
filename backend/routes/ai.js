@@ -37,7 +37,7 @@ router.post('/analyze', auth, async (req, res) => {
     const totalExpense = monthlyExpenses.reduce((sum, item) => sum + item.amount, 0);
     const savings = totalIncome - totalExpense;
 
-    // Category breakdown
+    // Current month category breakdown
     const categoryMap = {};
     monthlyExpenses.forEach(exp => {
       categoryMap[exp.category] = (categoryMap[exp.category] || 0) + exp.amount;
@@ -47,9 +47,49 @@ router.post('/analyze', auth, async (req, res) => {
       .map(cat => `- ${cat}: ${user.currency === 'INR' ? '₹' : '$'}${categoryMap[cat]}`)
       .join('\n');
 
+    // Calculate historical 6-month stats
+    const monthlyHist = {};
+    const historicalCategoryMap = {};
+    
+    // Initialize last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const tempDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${tempDate.getFullYear()}-${String(tempDate.getMonth() + 1).padStart(2, '0')}`;
+      monthlyHist[key] = { income: 0, expense: 0 };
+    }
+
+    incomes.forEach(item => {
+      const d = new Date(item.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (monthlyHist[key]) {
+        monthlyHist[key].income += item.amount;
+      }
+    });
+
+    expenses.forEach(item => {
+      const d = new Date(item.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (monthlyHist[key]) {
+        monthlyHist[key].expense += item.amount;
+      }
+      historicalCategoryMap[item.category] = (historicalCategoryMap[item.category] || 0) + item.amount;
+    });
+
+    // Compute averages
+    const monthsWithData = Object.keys(monthlyHist);
+    const totalHistIncome = monthsWithData.reduce((sum, k) => sum + monthlyHist[k].income, 0);
+    const totalHistExpense = monthsWithData.reduce((sum, k) => sum + monthlyHist[k].expense, 0);
+    const avgIncome = monthsWithData.length > 0 ? (totalHistIncome / monthsWithData.length) : 0;
+    const avgExpense = monthsWithData.length > 0 ? (totalHistExpense / monthsWithData.length) : 0;
+    const avgSavings = avgIncome - avgExpense;
+
+    const histCategoryText = Object.keys(historicalCategoryMap)
+      .map(cat => `- ${cat}: ${user.currency === 'INR' ? '₹' : '$'}${historicalCategoryMap[cat]} (Total over 6 months)`)
+      .join('\n');
+
     // Setup Prompt
     const contextPrompt = `
-You are an expert AI Financial Advisor. Provide highly personalized, actionable budgeting and savings advice based on the user's financial profile.
+You are an expert AI Financial Advisor. Provide highly personalized, actionable budgeting and savings advice based on the user's financial profile and transaction history.
 User Profile:
 - Name: ${user.name}
 - Monthly Budget Limit: ${user.currency === 'INR' ? '₹' : '$'}${user.monthlyBudget}
@@ -61,10 +101,18 @@ Current Month Stats (${new Date().toLocaleString('default', { month: 'long', yea
 - Current Monthly Savings: ${user.currency === 'INR' ? '₹' : '$'}${savings}
 - Budget Used: ${user.monthlyBudget > 0 ? Math.round((totalExpense / user.monthlyBudget) * 100) : 0}%
 
-Expense Breakdown by Category:
+Current Month Expense Breakdown by Category:
 ${categoriesText || '(No expenses recorded yet)'}
 
-${customMessage ? `User's Question: "${customMessage}"\n\nPlease answer this question using the above transaction data.` : `Provide general financial advice. Suggest where they can save money, call out any excessive spending categories (like if Shopping or Food is more than 30% of income), evaluate their monthly savings rate, and provide 3-4 bullet-point suggestions.`}
+Historical Averages (Over the last 6 months):
+- Avg Monthly Income: ${user.currency === 'INR' ? '₹' : '$'}${Math.round(avgIncome)}
+- Avg Monthly Expense: ${user.currency === 'INR' ? '₹' : '$'}${Math.round(avgExpense)}
+- Avg Monthly Savings: ${user.currency === 'INR' ? '₹' : '$'}${Math.round(avgSavings)}
+
+Historical Category Spending:
+${histCategoryText || '(No historical expenses recorded yet)'}
+
+${customMessage ? `User's Question: "${customMessage}"\n\nPlease answer this question precisely using the current month stats and historical averages above. If the user asks about future estimates (e.g. 6 months savings), calculate it using the historical average monthly savings value (${Math.round(avgSavings)}) and display the mathematical steps.` : `Provide general financial advice. Suggest where they can save money, call out any excessive spending categories (like if Shopping or Food is more than 30% of income), evaluate their monthly savings rate, and provide 3-4 bullet-point suggestions.`}
 Keep your response concise, friendly, and structured. Use Markdown formatting. Make sure numbers are formatted with currency symbols.
 `;
 
@@ -218,6 +266,40 @@ router.get('/forecast', auth, async (req, res) => {
       .slice(0, 3)
       .map(([name, total]) => ({ name, avgMonthly: Math.round(total / 3) }));
 
+    // Setup prediction explanation prompt for Gemini
+    const forecastPrompt = `
+You are an expert financial strategist and machine learning translator. 
+Here is a statistical cashflow prediction for the user based on linear regression analysis of their past 3 months transactions:
+- Historical Monthly Average Income: ${user.currency === 'INR' ? '₹' : '$'}${Math.round(avgIncome)}
+- Predicted Next Month Expense: ${user.currency === 'INR' ? '₹' : '$'}${forecastedExpense}
+- Projected Next Month Savings: ${user.currency === 'INR' ? '₹' : '$'}${forecastedSavings}
+- Expense Trend Direction: ${slope > 0 ? 'increasing' : slope < 0 ? 'decreasing' : 'stable'} (Change rate of ${user.currency === 'INR' ? '₹' : '$'}${Math.round(Math.abs(slope))} per month)
+- Budget Limit: ${user.currency === 'INR' ? '₹' : '$'}${budget}
+- Will Exceed Budget: ${willExceed ? 'Yes (by ' + (user.currency === 'INR' ? '₹' : '$') + excessAmount + ')' : 'No'}
+
+Top spend categories (last 3 months average):
+${topCategories.map(c => `- ${c.name}: ${user.currency === 'INR' ? '₹' : '$'}${c.avgMonthly}/mo`).join('\n')}
+
+Please explain this prediction to user ${user.name} in a clear, narrative style. 
+Identify which categories might be driving an increasing trend or how they can sustain a decreasing trend. 
+Provide 2-3 specific recommendations. Keep it under 150 words and use markdown formatting.
+`;
+
+    let explanation = `Based on your recent transactions, your monthly expenses are projected to be ${user.currency === 'INR' ? '₹' : '$'}${forecastedExpense.toLocaleString()} next month, leaving you with an estimated savings of ${user.currency === 'INR' ? '₹' : '$'}${forecastedSavings.toLocaleString()}.`;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey && apiKey !== 'YOUR_GEMINI_API_KEY_HERE') {
+      try {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const result = await model.generateContent(forecastPrompt);
+        const response = await result.response;
+        explanation = response.text();
+      } catch (geminiErr) {
+        console.error('Gemini explanation error, falling back to static:', geminiErr.message);
+      }
+    }
+
     res.json({
       currency: user?.currency || 'INR',
       forecastedExpense,
@@ -228,7 +310,8 @@ router.get('/forecast', auth, async (req, res) => {
       trend: slope > 0 ? 'increasing' : slope < 0 ? 'decreasing' : 'stable',
       slopeAmount: Math.round(Math.abs(slope)),
       topCategories,
-      historicalMonths: months
+      historicalMonths: months,
+      explanation
     });
   } catch (err) {
     console.error('Forecast error:', err.message);
