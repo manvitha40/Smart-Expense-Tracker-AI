@@ -35,6 +35,7 @@ async function seed() {
     monthlyBudget: 50000,
     currency: 'INR',
     theme: 'light',
+    role: 'admin',
     notifications: {
       budgetAlerts: true,
       emailAlerts: true
