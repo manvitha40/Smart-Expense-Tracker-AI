@@ -28,10 +28,10 @@ async function seed() {
   const hashedPassword = await bcrypt.hash('password123', salt);
 
   demoUser = await User.create({
-    name: 'John Doe',
+    name: 'Manvitha',
     email: demoEmail,
     password: hashedPassword,
-    profileImage: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150',
+    profileImage: 'https://ui-avatars.com/api/?name=M&background=7C3AED&color=fff&size=150&bold=true&font-size=0.5',
     monthlyBudget: 50000,
     currency: 'INR',
     theme: 'light',

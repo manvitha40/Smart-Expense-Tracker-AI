@@ -160,6 +160,13 @@ router.put('/profile', auth, async (req, res) => {
       updates.password = await bcrypt.hash(password, salt);
     }
 
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true }
+    );
+    if (!updatedUser) return res.status(404).json({ msg: 'User not found' });
+
     const userObj = updatedUser.toObject ? updatedUser.toObject() : { ...updatedUser };
     delete userObj.password;
     res.json(userObj);
