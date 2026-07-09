@@ -7,7 +7,12 @@ async function seedDemoData(force = false) {
     let demoUser = await User.findOne({ email: demoEmail });
 
     if (demoUser && !force) {
-      console.log('✅ Demo user already exists. Skipping auto-seeding.');
+      // Always patch name + avatar in case they are outdated
+      await User.findByIdAndUpdate(demoUser._id || demoUser.id, {
+        name: 'Manvitha',
+        profileImage: 'https://ui-avatars.com/api/?name=M&background=7C3AED&color=fff&size=150&bold=true&font-size=0.5'
+      });
+      console.log('✅ Demo user profile patched (Manvitha). Skipping full re-seed.');
       return;
     }
 
