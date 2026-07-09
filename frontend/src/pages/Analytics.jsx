@@ -161,9 +161,36 @@ export default function Analytics() {
     { name: 'Expense', 'Last Month': prevMonthSpent, 'Current Month': curMonthSpent }
   ];
 
-  // Spending shifts percentage math
   const spendingDiff = curMonthSpent - prevMonthSpent;
   const spendingShiftPct = prevMonthSpent > 0 ? Math.round((spendingDiff / prevMonthSpent) * 100) : 0;
+
+  // ── Spending Heatmap: day-of-week × week-of-month ─────────────────────────
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const heatmapGrid = Array.from({ length: 5 }, () => Array(7).fill(0)); // [week][day]
+  curMonthExpenses.forEach(e => {
+    const d = new Date(e.date);
+    const week = Math.floor((d.getDate() - 1) / 7);
+    const day = d.getDay();
+    if (week < 5) heatmapGrid[week][day] += e.amount;
+  });
+  const heatmapMax = Math.max(...heatmapGrid.flat(), 1);
+
+  // ── 6-Month Category Trend ─────────────────────────────────────────────────
+  const sixMonthData = [];
+  const topCats = Object.entries(categoryMap).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([n])=>n);
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const m = d.getMonth(), y = d.getFullYear();
+    const label = d.toLocaleString('default', { month: 'short' });
+    const row = { label };
+    topCats.forEach(cat => {
+      row[cat] = expenses
+        .filter(e => { const ed = new Date(e.date); return ed.getMonth()===m && ed.getFullYear()===y && e.category===cat; })
+        .reduce((s,e) => s + e.amount, 0);
+    });
+    sixMonthData.push(row);
+  }
+  const catColors = ['#0D9488','#7C3AED','#F97316','#EF4444'];
 
   return (
     <div className="space-y-6">
@@ -306,6 +333,66 @@ export default function Analytics() {
         </div>
 
       </div>
+
+      {/* ── Spending Heatmap ── */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 shadow-premium">
+        <div className="mb-4">
+          <h3 className="font-extrabold text-base text-slate-800 dark:text-white">Daily Spending Heatmap</h3>
+          <p className="text-xs text-slate-400">Intensity of spending by day-of-week this month — darker = higher spend</p>
+        </div>
+        <div className="overflow-x-auto">
+          <div className="min-w-[400px]">
+            {/* Day labels */}
+            <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+              {DAYS.map(d => <div key={d} className="text-center text-[10px] font-bold text-slate-400">{d}</div>)}
+            </div>
+            {/* Weeks */}
+            {heatmapGrid.map((week, wi) => (
+              <div key={wi} className="grid grid-cols-7 gap-1.5 mb-1.5">
+                {week.map((val, di) => {
+                  const intensity = val / heatmapMax;
+                  const opacity = val === 0 ? 0.06 : 0.15 + intensity * 0.85;
+                  return (
+                    <div
+                      key={di}
+                      title={val > 0 ? `${getCurrencySymbol(user?.currency)}${Math.round(val).toLocaleString()}` : 'No spending'}
+                      className="aspect-square rounded-lg cursor-default transition-transform hover:scale-110"
+                      style={{ background: `rgba(13, 148, 136, ${opacity})` }}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+            <div className="flex items-center gap-2 mt-3 justify-end">
+              <span className="text-[10px] text-slate-400">Low</span>
+              {[0.06,0.25,0.45,0.65,0.85].map(o => <div key={o} className="w-4 h-4 rounded" style={{background:`rgba(13,148,136,${o})`}} />)}
+              <span className="text-[10px] text-slate-400">High</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 6-Month Category Trends ── */}
+      {sixMonthData.length > 0 && topCats.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 shadow-premium">
+          <div className="mb-5">
+            <h3 className="font-extrabold text-base text-slate-800 dark:text-white">6-Month Category Trends</h3>
+            <p className="text-xs text-slate-400">How your top spending categories have evolved over 6 months</p>
+          </div>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={sixMonthData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
+              <XAxis dataKey="label" stroke="#94A3B8" tick={{ fontSize: 11 }} />
+              <YAxis stroke="#94A3B8" tick={{ fontSize: 11 }} tickFormatter={v => `${getCurrencySymbol(user?.currency)}${(v/1000).toFixed(0)}k`} />
+              <Tooltip formatter={(val, name) => [`${getCurrencySymbol(user?.currency)}${val.toLocaleString()}`, name]} />
+              <Legend />
+              {topCats.map((cat, i) => (
+                <Bar key={cat} dataKey={cat} stackId="a" fill={catColors[i]} radius={i === topCats.length-1 ? [4,4,0,0] : [0,0,0,0]} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
     </div>
   );

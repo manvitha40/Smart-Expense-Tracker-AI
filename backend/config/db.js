@@ -84,6 +84,7 @@ const UserSchema = new mongoose.Schema({
     budgetAlerts: { type: Boolean, default: true },
     emailAlerts: { type: Boolean, default: true }
   },
+  role: { type: String, default: 'user' }, // 'user' | 'admin'
   createdAt: { type: Date, default: Date.now }
 });
 

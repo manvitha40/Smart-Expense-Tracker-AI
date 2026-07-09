@@ -22,6 +22,7 @@ import Subscriptions from './pages/Subscriptions';
 import Forecast from './pages/Forecast';
 import Challenges from './pages/Challenges';
 import SplitBill from './pages/SplitBill';
+import Admin from './pages/Admin';
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -180,6 +181,13 @@ function AppRoutes() {
         <ProtectedRoute>
           <DashboardLayout>
             <SplitBill />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <Admin />
           </DashboardLayout>
         </ProtectedRoute>
       } />

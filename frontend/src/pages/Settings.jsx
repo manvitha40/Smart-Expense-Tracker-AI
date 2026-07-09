@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { User as UserIcon, Mail, Coins, ShieldAlert, Key, Trash2, Camera, ShieldCheck } from 'lucide-react';
+import { User as UserIcon, Mail, Coins, ShieldAlert, Key, Trash2, Camera, ShieldCheck, Send, Bell } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Settings() {
@@ -26,6 +26,7 @@ export default function Settings() {
   // CSV Import state
   const [importFile, setImportFile] = useState(null);
   const [importing, setImporting] = useState(false);
+  const [emailSending, setEmailSending] = useState('');
 
   // Initial Sync
   useEffect(() => {
@@ -335,6 +336,59 @@ export default function Settings() {
               Update Password
             </button>
           </form>
+
+          {/* Email Notifications Card */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-3xl p-6 shadow-premium space-y-4 mt-6">
+            <h3 className="font-extrabold text-base text-slate-800 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <Bell size={18} className="text-primary" />
+              <span>Email Notifications</span>
+            </h3>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              Send real-time budget alerts and weekly financial digests to <strong>{user?.email}</strong>. Requires <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">EMAIL_USER</code> &amp; <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">EMAIL_PASS</code> set in your Render environment variables.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                disabled={emailSending === 'budget'}
+                onClick={async () => {
+                  setEmailSending('budget');
+                  try {
+                    const { data } = await axios.post('/api/email-notifications/test-email', {}, {
+                      headers: { 'x-auth-token': localStorage.getItem('token') }
+                    });
+                    toast.success(data.msg);
+                  } catch (err) {
+                    toast.error(err.response?.data?.msg || 'Failed to send');
+                  } finally {
+                    setEmailSending('');
+                  }
+                }}
+                className="py-2.5 px-4 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Send size={13} />
+                {emailSending === 'budget' ? 'Sending…' : 'Test Budget Alert'}
+              </button>
+              <button
+                disabled={emailSending === 'weekly'}
+                onClick={async () => {
+                  setEmailSending('weekly');
+                  try {
+                    const { data } = await axios.post('/api/email-notifications/send-weekly', {}, {
+                      headers: { 'x-auth-token': localStorage.getItem('token') }
+                    });
+                    toast.success(data.msg);
+                  } catch (err) {
+                    toast.error(err.response?.data?.msg || 'Failed to send');
+                  } finally {
+                    setEmailSending('');
+                  }
+                }}
+                className="py-2.5 px-4 bg-primary hover:bg-primary-dark disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Mail size={13} />
+                {emailSending === 'weekly' ? 'Sending…' : 'Send Weekly Summary'}
+              </button>
+            </div>
+          </div>
 
           {/* CSV Bank Statement Import Card */}
           <form onSubmit={handleImportCSV} className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-3xl p-6 shadow-premium space-y-4 mt-6">
