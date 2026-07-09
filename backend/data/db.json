@@ -32,10 +32,10 @@
     },
     {
       "_id": "e59b21058d837990a045b969",
-      "name": "John Doe",
+      "name": "Manvitha",
       "email": "guest@example.com",
       "password": "$2a$10$xcP/1PulFmepsGbxNbzWSu5g/yQCSfUxnt3C0QIeMdIY0x71vvx0e",
-      "profileImage": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
+      "profileImage": "https://ui-avatars.com/api/?name=M&background=7C3AED&color=fff&size=150&bold=true&font-size=0.5",
       "monthlyBudget": 50000,
       "currency": "INR",
       "theme": "light",
