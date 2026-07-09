@@ -47,7 +47,7 @@ router.put('/:id/contribute', auth, async (req, res) => {
   try {
     const goal = await Goal.findById(req.params.id);
     if (!goal) return res.status(404).json({ msg: 'Goal not found' });
-    if (goal.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+    if (String(goal.userId) !== String(req.user.id)) return res.status(401).json({ msg: 'Not authorized' });
 
     const newSavedAmount = Math.min(goal.targetAmount, goal.savedAmount + contribution);
     const updated = await Goal.findByIdAndUpdate(req.params.id, { savedAmount: newSavedAmount }, { new: true });
@@ -64,7 +64,7 @@ router.put('/:id', auth, async (req, res) => {
   try {
     const goal = await Goal.findById(req.params.id);
     if (!goal) return res.status(404).json({ msg: 'Goal not found' });
-    if (goal.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+    if (String(goal.userId) !== String(req.user.id)) return res.status(401).json({ msg: 'Not authorized' });
 
     const updates = {};
     if (title !== undefined) updates.title = title;
@@ -87,7 +87,7 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     const goal = await Goal.findById(req.params.id);
     if (!goal) return res.status(404).json({ msg: 'Goal not found' });
-    if (goal.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+    if (String(goal.userId) !== String(req.user.id)) return res.status(401).json({ msg: 'Not authorized' });
 
     await Goal.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Goal removed' });

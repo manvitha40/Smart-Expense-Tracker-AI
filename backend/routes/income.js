@@ -51,7 +51,7 @@ router.put('/:id', auth, async (req, res) => {
     if (!income) return res.status(404).json({ msg: 'Income record not found' });
     
     // Check ownership
-    if (income.userId !== req.user.id) {
+    if (String(income.userId) !== String(req.user.id)) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 

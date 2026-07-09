@@ -42,7 +42,7 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     const notif = await Notification.findById(req.params.id);
     if (!notif) return res.status(404).json({ msg: 'Notification not found' });
-    if (notif.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+    if (String(notif.userId) !== String(req.user.id)) return res.status(401).json({ msg: 'Not authorized' });
 
     await Notification.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Notification deleted' });
