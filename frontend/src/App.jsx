@@ -20,6 +20,8 @@ import Settings from './pages/Settings';
 import Goals from './pages/Goals';
 import Subscriptions from './pages/Subscriptions';
 import Forecast from './pages/Forecast';
+import Challenges from './pages/Challenges';
+import SplitBill from './pages/SplitBill';
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -167,6 +169,20 @@ function AppRoutes() {
           </DashboardLayout>
         </ProtectedRoute>
       } />
+      <Route path="/challenges" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <Challenges />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/split-bill" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <SplitBill />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
 
       {/* Redirect wildcards */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -175,6 +191,14 @@ function AppRoutes() {
 }
 
 export default function App() {
+  React.useEffect(() => {
+    const colorTheme = localStorage.getItem('colorTheme') || 'teal';
+    document.body.classList.remove('theme-emerald', 'theme-neon', 'theme-lavender');
+    if (colorTheme !== 'teal') {
+      document.body.classList.add(`theme-${colorTheme}`);
+    }
+  }, []);
+
   return (
     <Router>
       <AuthProvider>

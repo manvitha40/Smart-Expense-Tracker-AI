@@ -15,6 +15,7 @@ export default function Settings() {
   // Preference state
   const [currency, setCurrency] = useState('INR');
   const [theme, setTheme] = useState('light');
+  const [colorTheme, setColorTheme] = useState(localStorage.getItem('colorTheme') || 'teal');
   const [budgetAlerts, setBudgetAlerts] = useState(true);
   const [emailAlerts, setEmailAlerts] = useState(true);
 
@@ -30,6 +31,7 @@ export default function Settings() {
       setProfileImage(user.profileImage || '');
       setCurrency(user.currency || 'INR');
       setTheme(user.theme || 'light');
+      setColorTheme(localStorage.getItem('colorTheme') || 'teal');
       setBudgetAlerts(user.notifications?.budgetAlerts ?? true);
       setEmailAlerts(user.notifications?.emailAlerts ?? true);
     }
@@ -42,6 +44,7 @@ export default function Settings() {
     }
 
     try {
+      localStorage.setItem('colorTheme', colorTheme);
       await updateProfile({
         name: name.trim(),
         email: email.trim(),
@@ -173,6 +176,38 @@ export default function Settings() {
                   <option value="GBP">GBP (£)</option>
                 </select>
                 <Coins className="absolute left-3.5 top-3.5 text-slate-400" size={14} />
+              </div>
+            </div>
+
+            {/* Visual Color Skin Theme Selector */}
+            <div className="space-y-3 pt-2">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">UI Theme Accent</label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { id: 'teal', name: 'Default Teal', color: 'bg-teal-500' },
+                  { id: 'emerald', name: 'Forest Emerald', color: 'bg-emerald-500' },
+                  { id: 'neon', name: 'Cyberpunk Neon', color: 'bg-pink-500' },
+                  { id: 'lavender', name: 'Glassmorphic Lavender', color: 'bg-indigo-500' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => {
+                      setColorTheme(t.id);
+                      document.body.classList.remove('theme-emerald', 'theme-neon', 'theme-lavender');
+                      if (t.id !== 'teal') {
+                        document.body.classList.add(`theme-${t.id}`);
+                      }
+                    }}
+                    className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all duration-200
+                      ${colorTheme === t.id 
+                        ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
+                        : 'border-slate-200 dark:border-slate-700 hover:border-primary/50'}`}
+                  >
+                    <span className={`w-3.5 h-3.5 rounded-full ${t.color} shrink-0 shadow-sm`} />
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">{t.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
 

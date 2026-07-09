@@ -21,7 +21,9 @@ import {
   Plus,
   LineChart,
   RefreshCw,
-  Zap
+  Zap,
+  Trophy,
+  Users
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -40,6 +42,8 @@ export default function Sidebar() {
     { name: 'Savings Goals', path: '/goals', icon: Zap },
     { name: 'Subscriptions', path: '/subscriptions', icon: RefreshCw },
     { name: 'AI Forecast', path: '/forecast', icon: LineChart },
+    { name: 'Challenges', path: '/challenges', icon: Trophy },
+    { name: 'Split Bill', path: '/split-bill', icon: Users },
     { name: 'Reports', path: '/reports', icon: BarChart3 },
     { name: 'Analytics', path: '/analytics', icon: PieChart },
     { name: 'AI Advisor', path: '/ai-advisor', icon: Bot },

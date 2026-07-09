@@ -9,14 +9,14 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#0D9488', // Calming Teal / Sage
-          light: '#14B8A6',
-          dark: '#0F766E',
+          DEFAULT: 'var(--color-primary, #0D9488)',
+          light: 'var(--color-primary-light, #14B8A6)',
+          dark: 'var(--color-primary-dark, #0F766E)',
         },
         secondary: {
-          DEFAULT: '#059669', // Emerald Green
-          light: '#34D399',
-          dark: '#065F46',
+          DEFAULT: 'var(--color-secondary, #059669)',
+          light: 'var(--color-secondary-light, #34D399)',
+          dark: 'var(--color-secondary-dark, #065F46)',
         },
         danger: {
           DEFAULT: '#EF4444',
