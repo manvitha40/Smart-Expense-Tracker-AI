@@ -390,6 +390,41 @@ export default function Settings() {
             </div>
           </div>
 
+          {/* Developer / Testing Options Card */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-3xl p-6 shadow-premium space-y-4 mt-6">
+            <h3 className="font-extrabold text-base text-slate-800 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <ShieldAlert size={18} className="text-primary" />
+              <span>Developer Options</span>
+            </h3>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              Use this toggle to instantly switch your user role between <strong>user</strong> and <strong>admin</strong> to test role-based access to features like the Admin Panel.
+            </p>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem('token');
+                  const { data } = await axios.post('/api/auth/toggle-role', {}, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                  });
+                  toast.success(data.msg);
+                  // Update local storage so state updates immediately
+                  const updatedUser = { ...user, role: data.user.role };
+                  localStorage.setItem('user', JSON.stringify(updatedUser));
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                } catch (err) {
+                  toast.error(err.response?.data?.msg || 'Failed to toggle role');
+                }
+              }}
+              className="w-full py-2.5 bg-violet-650 hover:bg-violet-700 text-white rounded-xl font-bold shadow-md transition-all text-xs flex items-center justify-center gap-1.5"
+            >
+              <ShieldAlert size={13} />
+              Toggle Admin Status (Current: {user?.role || 'user'})
+            </button>
+          </div>
+
           {/* CSV Bank Statement Import Card */}
           <form onSubmit={handleImportCSV} className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-3xl p-6 shadow-premium space-y-4 mt-6">
             <h3 className="font-extrabold text-base text-slate-800 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
