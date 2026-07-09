@@ -1,177 +1,385 @@
-# 💰 SmartSpend.AI – AI-Powered Smart Expense Tracker
+# 💰 Smart Expense Tracker with AI
 
-<p align="center">
-
-![React](https://img.shields.io/badge/React-18-blue?logo=react)
-![Node.js](https://img.shields.io/badge/Node.js-green?logo=node.js)
-![Express](https://img.shields.io/badge/Express.js-black?logo=express)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)
-![Gemini](https://img.shields.io/badge/Google-Gemini-blue?logo=google)
-![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)
-![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?logo=render)
-
-</p>
+A modern **AI-enhanced Full Stack Expense Management System** that helps users efficiently manage their personal finances through expense tracking, budgeting, financial analytics, and AI-powered insights. The application combines a responsive React frontend, a secure Express.js backend, MongoDB database, and Google Gemini AI to provide intelligent financial recommendations.
 
 ---
 
-## 📌 Overview
+## 🚀 Live Demo
 
-SmartSpend.AI is a full-stack personal finance management platform that helps users efficiently manage their income, expenses, budgets, savings goals, and subscriptions through an intuitive dashboard. The application integrates Google Gemini AI to provide intelligent financial insights, OCR-based receipt scanning, predictive cashflow forecasting, and interactive analytics for smarter financial planning.
-
----
-
-## ✨ Features
-
-- 🔐 Secure JWT Authentication
-- 💰 Income & Expense Management
-- 📊 Interactive Dashboard
-- 📈 Budget Planning
-- 🎯 Savings Goal Tracking
-- 🔁 Subscription Management
-- 📄 PDF Report Generation
-- 📉 Financial Analytics
-- 📷 OCR Receipt Scanner
-- 🤖 AI Financial Advisor
-- 📊 AI Cashflow Forecast
-- 🔔 Smart Notifications
-- ⚙ User Profile & Settings
+- **Frontend:** https://smart-expense-tracker-ai-gamma.vercel.app/
+- **Backend API:** https://dashboard.render.com/web/srv-d92adf4m0tmc73dqom90
 
 ---
 
-## 🛠 Tech Stack
+# 📌 Features
 
-### Frontend
-
-- React.js
-- Vite
-- Tailwind CSS
-- Axios
-- React Context API
-
-### Backend
-
-- Node.js
-- Express.js
+### 👤 User Authentication
+- Secure User Registration & Login
 - JWT Authentication
-- Multer
+- Protected Routes
+- Session Management
 
-### Database
+### 💰 Expense Management
+- Add Expenses
+- Edit Expenses
+- Delete Expenses
+- Expense Categorization
 
-- MongoDB Atlas
+### 💵 Income Management
+- Add Income
+- Track Income Sources
+- Income History
 
-### AI Integration
+### 📊 Dashboard
+- Financial Summary
+- Monthly Income
+- Monthly Expenses
+- Current Balance
+- Recent Transactions
 
-- Google Gemini API
+### 📈 Analytics
+- Expense Distribution
+- Monthly Spending Trends
+- Category-wise Analysis
+- Financial Statistics
 
-### Deployment
+### 🎯 Budget Management
+- Create Budgets
+- Track Budget Usage
+- Budget Progress
 
-- Vercel
-- Render
+### 🏆 Financial Goals
+- Create Savings Goals
+- Track Goal Progress
+- Goal Completion Status
+
+### 📄 Reports
+- Monthly Reports
+- Expense Summary
+- PDF Report Generation
+
+### 🤖 AI Features
+- AI Financial Advisor
+- Personalized Financial Suggestions
+- Smart Spending Recommendations
+- Expense Forecasting
+
+### 📷 OCR Receipt Scanner
+- Upload Receipt Images
+- Automatic Text Extraction
+- Easy Expense Entry
+
+### 🔔 Notifications
+- Financial Alerts
+- Budget Notifications
+
+### 💳 Subscription Tracker
+- Manage Monthly Subscriptions
+- Track Recurring Payments
 
 ---
 
-## 📂 Project Structure
+# 🛠️ Tech Stack
 
-```text
-Smart-Expense-Tracker-AI
+| Category | Technologies |
+|-----------|--------------|
+| Frontend | React.js, Vite, Tailwind CSS |
+| Backend | Node.js, Express.js |
+| Database | MongoDB |
+| Authentication | JWT |
+| AI | Google Gemini API |
+| OCR | Tesseract.js |
+| Charts | Recharts |
+| PDF Export | jsPDF, html2canvas |
+| Deployment | Vercel, Render |
+
+---
+
+# 🏗️ System Architecture
+
+```
+                  React Frontend
+                        │
+                        ▼
+                Express REST API
+                        │
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+ Authentication     MongoDB        Gemini AI
+     (JWT)         Database       Financial Advisor
+                        │
+                        ▼
+                  OCR Receipt Scanner
+```
+
+---
+
+# 📂 Project Structure
+
+```
+Smart-Expense-Tracker
 │
 ├── frontend
 │   ├── src
-│   ├── components
-│   ├── context
-│   ├── pages
-│   └── assets
+│   │   ├── components
+│   │   ├── pages
+│   │   ├── context
+│   │   └── assets
+│   ├── package.json
+│   └── vite.config.js
 │
 ├── backend
 │   ├── config
+│   ├── controllers
 │   ├── middleware
 │   ├── routes
-│   ├── uploads
 │   ├── scripts
-│   └── server.js
+│   ├── data
+│   ├── server.js
+│   └── package.json
 │
 └── README.md
 ```
 
 ---
 
-## 🚀 Installation
+# 📸 Application Screenshots
 
-### Clone the Repository
+## 🏠 Dashboard
 
-```bash
-git clone https://github.com/YOUR_USERNAME/Smart-Expense-Tracker-AI.git
-cd Smart-Expense-Tracker-AI
-```
-
-### Install Backend Dependencies
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-### Install Frontend Dependencies
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
+![Dashboard](screenshots/dashboard.png)
 
 ---
 
-## 🔑 Environment Variables
+## 💰 Expense Management
 
-Create a `.env` file inside the **backend** directory.
+![Expenses](screenshots/expenses.png)
+
+---
+
+## 📊 Analytics Dashboard
+
+![Analytics](screenshots/analytics.png)
+
+---
+
+## 🤖 AI Financial Advisor
+
+![AI Advisor](screenshots/ai-advisor.png)
+
+---
+
+## 📷 OCR Receipt Scanner
+
+![Receipt Scanner](screenshots/receipt-scanner.png)
+
+---
+
+## 📄 Reports
+
+![Reports](screenshots/reports.png)
+
+---
+
+## 🎯 Budget Management
+
+![Budget](screenshots/budget.png)
+
+---
+
+# 🤖 AI Features
+
+## 💡 AI Financial Advisor
+
+Uses **Google Gemini AI** to provide:
+
+- Personalized financial recommendations
+- Smart budgeting suggestions
+- Spending pattern analysis
+- Savings recommendations
+- Financial health insights
+
+---
+
+## 📷 OCR Receipt Scanner
+
+Using **Tesseract OCR**, users can:
+
+- Upload receipt images
+- Extract receipt text
+- Automatically create expenses
+
+---
+
+## 📈 Financial Forecast
+
+The application analyzes spending history and provides AI-generated financial insights to help users make informed budgeting decisions.
+
+---
+
+# 🔑 Environment Variables
+
+### Backend (.env)
 
 ```env
 PORT=5000
 
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=your_mongodb_connection
 
 JWT_SECRET=your_secret_key
 
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
----
+### Frontend (.env)
 
-## 🌐 Live Demo
-
-### Frontend
-
-https://smart-expense-tracker-ai-gamma.vercel.app
-
-### Backend
-
-https://smart-expense-tracker-backend-qva7.onrender.com
+```env
+VITE_API_URL=http://localhost:5000
+```
 
 ---
 
-## 🚀 Future Enhancements
+# ⚙️ Installation
 
-- Multi-Currency Support
-- Email Notifications
-- Dark Mode
-- Investment Tracking
-- Bank API Integration
-- Mobile Application
-- Advanced AI Recommendations
-- Expense Sharing
+## Clone Repository
+
+```bash
+git clone https://github.com/manvitha40/Smart-Expense-Tracker.git
+```
 
 ---
 
-## 👩‍💻 Author
+## Install Backend Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+---
+
+## Install Frontend Dependencies
+
+```bash
+cd ../frontend
+npm install
+```
+
+---
+
+## Start Backend
+
+```bash
+cd backend
+npm run dev
+```
+
+---
+
+## Start Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+---
+
+# 🌐 API Endpoints
+
+## Authentication
+
+```
+POST /api/auth/register
+
+POST /api/auth/login
+```
+
+## Dashboard
+
+```
+GET /api/dashboard
+```
+
+## Expenses
+
+```
+GET /api/expenses
+
+POST /api/expenses
+
+PUT /api/expenses/:id
+
+DELETE /api/expenses/:id
+```
+
+## Income
+
+```
+GET /api/income
+
+POST /api/income
+```
+
+## Budget
+
+```
+GET /api/budget
+
+POST /api/budget
+```
+
+## Goals
+
+```
+GET /api/goals
+
+POST /api/goals
+```
+
+## Reports
+
+```
+GET /api/reports
+```
+
+## AI
+
+```
+POST /api/ai
+```
+
+---
+
+# 🚀 Deployment
+
+| Service | Platform |
+|----------|----------|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | MongoDB Atlas |
+
+---
+
+# 🔮 Future Enhancements
+
+- 📧 Email Notifications
+- 🔁 Recurring Expenses
+- 📥 Bank Statement CSV Import
+- 📱 Improved Mobile Responsiveness
+- 🌙 Dark Mode
+- 📊 Advanced Financial Analytics
+- 🧠 Machine Learning-based Expense Forecasting
+- 👨‍💼 Admin Dashboard
+
+---
+
+# 👩‍💻 Author
 
 **Sai Manvitha Pamulapati**
 
-- GitHub: https://github.com/YOUR_GITHUB_USERNAME
-- LinkedIn: https://www.linkedin.com/in/YOUR_LINKEDIN
+- GitHub: https://github.com/manvitha40
 
 ---
 
-## ⭐ Show Your Support
-
-If you found this project useful, consider giving it a ⭐ on GitHub.
+## ⭐ If you found this project useful, consider giving it a star!
