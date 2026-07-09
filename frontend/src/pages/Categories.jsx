@@ -125,7 +125,7 @@ export default function Categories() {
     return { count, total };
   };
 
-  const getCurrencySymbol = (cur) => cur === 'INR' ? '₹' : '$';
+  const getCurrencySymbol = (cur) => cur === 'USD' ? '$' : '₹';
 
   return (
     <div className="space-y-6">

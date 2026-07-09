@@ -32,7 +32,7 @@ export default function Income() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const curr = user?.currency === 'INR' ? '₹' : '$';
+  const curr = user?.currency === 'USD' ? '$' : '₹';
 
   const fetchIncomes = async () => {
     try {

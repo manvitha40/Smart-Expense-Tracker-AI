@@ -24,7 +24,7 @@ export default function Forecast() {
 
   useEffect(() => { fetchForecast(); }, []);
 
-  const curr = (data?.currency === 'INR') ? '₹' : '$';
+  const curr = (data?.currency === 'USD') ? '$' : '₹';
 
   const TrendIcon = ({ trend }) => {
     if (trend === 'increasing') return <TrendingUp size={20} className="text-red-500" />;

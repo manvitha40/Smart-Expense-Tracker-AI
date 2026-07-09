@@ -63,7 +63,7 @@ export default function Budget() {
     }
   };
 
-  const getCurrencySymbol = (cur) => cur === 'INR' ? '₹' : '$';
+  const getCurrencySymbol = (cur) => cur === 'USD' ? '$' : '₹';
 
   const budgetLimit = user?.monthlyBudget || 0;
   const remaining = Math.max(0, budgetLimit - totalSpent);

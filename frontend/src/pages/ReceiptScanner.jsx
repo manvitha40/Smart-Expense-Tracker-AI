@@ -200,7 +200,7 @@ export default function ReceiptScanner() {
     }
   };
 
-  const getCurrencySymbol = (cur) => cur === 'INR' ? '₹' : '$';
+  const getCurrencySymbol = (cur) => cur === 'USD' ? '$' : '₹';
 
   return (
     <div className="space-y-6">

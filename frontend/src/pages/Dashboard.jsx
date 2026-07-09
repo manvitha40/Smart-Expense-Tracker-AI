@@ -65,7 +65,7 @@ export default function Dashboard() {
     charts: { categoryDistribution: [], monthlyTrend: [] }
   };
 
-  const getCurrencySymbol = (cur) => cur === 'INR' ? '₹' : '$';
+  const getCurrencySymbol = (cur) => cur === 'USD' ? '$' : '₹';
 
   // Pie chart colors
   const COLORS = ['#0D9488', '#059669', '#EF4444', '#F59E0B', '#3B82F6', '#EC4899', '#8B5CF6', '#6B7280'];

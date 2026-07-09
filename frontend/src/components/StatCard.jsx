@@ -9,7 +9,7 @@ export default function StatCard({
   trend 
 }) {
   const getCurrencySymbol = (cur) => {
-    return cur === 'INR' ? '₹' : '$';
+    return cur === 'USD' ? '$' : '₹';
   };
 
   return (

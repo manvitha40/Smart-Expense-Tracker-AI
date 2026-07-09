@@ -60,7 +60,7 @@ export default function Analytics() {
     );
   }
 
-  const getCurrencySymbol = (cur) => cur === 'INR' ? '₹' : '$';
+  const getCurrencySymbol = (cur) => cur === 'USD' ? '$' : '₹';
 
   // Math variables
   const now = new Date();

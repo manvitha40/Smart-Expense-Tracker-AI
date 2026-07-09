@@ -127,7 +127,7 @@ router.get('/user', auth, async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
     
     // Omit password
-    const userObj = { ...user };
+    const userObj = user.toObject ? user.toObject() : { ...user };
     delete userObj.password;
     res.json(userObj);
   } catch (err) {
@@ -160,9 +160,7 @@ router.put('/profile', auth, async (req, res) => {
       updates.password = await bcrypt.hash(password, salt);
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
-    
-    const userObj = { ...updatedUser };
+    const userObj = updatedUser.toObject ? updatedUser.toObject() : { ...updatedUser };
     delete userObj.password;
     res.json(userObj);
   } catch (err) {

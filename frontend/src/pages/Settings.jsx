@@ -82,7 +82,7 @@ export default function Settings() {
     }
   };
 
-  const getCurrencySymbol = (cur) => cur === 'INR' ? '₹' : '$';
+  const getCurrencySymbol = (cur) => cur === 'USD' ? '$' : '₹';
 
   return (
     <div className="space-y-6">
