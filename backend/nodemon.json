@@ -1,0 +1,12 @@
+{
+  "ignore": [
+    "data/**",
+    "*.json",
+    "**/*.json",
+    "tests/**"
+  ],
+  "watch": [
+    "**/*.js"
+  ],
+  "ext": "js"
+}
