@@ -151,7 +151,7 @@ export default function Login() {
           {/* Seed Shortcut Alert */}
           <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-2">
             <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-relaxed">
-              💡 <strong>Demo Account:</strong> Try logging in with <code>demo@example.com</code> and <code>password123</code> to view seeded chart data.
+              💡 <strong>Demo Account:</strong> Try logging in with <code>guest@example.com</code> and <code>guest123</code> to view seeded chart data.
             </p>
             <div className="pt-1.5 flex items-center justify-between border-t border-slate-200/40 dark:border-slate-700/40">
               <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Data modified or missing?</span>

@@ -3,7 +3,7 @@ const { User, Income, Expense, Category, Notification, Goal } = require('../conf
 
 async function seedDemoData(force = false) {
   try {
-    const demoEmail = 'demo@example.com';
+    const demoEmail = 'guest@example.com';
     let demoUser = await User.findOne({ email: demoEmail });
 
     if (demoUser && !force) {
@@ -26,7 +26,7 @@ async function seedDemoData(force = false) {
 
     // Create demo user
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('password123', salt);
+    const hashedPassword = await bcrypt.hash('guest123', salt);
 
     demoUser = await User.create({
       name: 'John Doe',
