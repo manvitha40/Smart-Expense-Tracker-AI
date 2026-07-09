@@ -11,6 +11,8 @@ const app = express();
 connectDB().then(() => {
   const { seedDemoData } = require('./controllers/initController');
   seedDemoData(false);
+  const { startRecurringScheduler } = require('./services/recurringService');
+  startRecurringScheduler();
 });
 
 // Middleware
@@ -30,6 +32,7 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/ai', require('./routes/ai'));
+app.use('/api/import', require('./routes/import'));
 app.use('/api/goals', require('./routes/goals'));
 app.use('/api/subscriptions', require('./routes/subscriptions'));
 app.use('/api/init', require('./routes/init'));

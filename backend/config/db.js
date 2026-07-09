@@ -103,6 +103,8 @@ const ExpenseSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   paymentMethod: { type: String, required: true },
   receiptImage: { type: String, default: '' },
+  isRecurring: { type: Boolean, default: false },
+  recurrence: { type: String, default: 'none' }, // 'none', 'weekly', 'monthly'
   date: { type: Date, default: Date.now }
 });
 

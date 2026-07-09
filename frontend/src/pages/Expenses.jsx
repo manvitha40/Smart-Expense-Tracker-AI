@@ -39,6 +39,8 @@ export default function Expenses() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [receiptFile, setReceiptFile] = useState(null);
   const [receiptPreviewUrl, setReceiptPreviewUrl] = useState('');
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrence, setRecurrence] = useState('none');
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,7 +89,9 @@ export default function Expenses() {
     setEditingId(null); setAmount(''); setMerchant('');
     setCategory(categories[0]?.name || 'Food'); setDescription('');
     setPaymentMethod('UPI'); setDate(new Date().toISOString().split('T')[0]);
-    setReceiptFile(null); setReceiptPreviewUrl(''); setShowModal(true);
+    setReceiptFile(null); setReceiptPreviewUrl(''); 
+    setIsRecurring(false); setRecurrence('none');
+    setShowModal(true);
   };
 
   const openEditModal = (item) => {
@@ -95,7 +99,9 @@ export default function Expenses() {
     setCategory(item.category); setDescription(item.description || '');
     setPaymentMethod(item.paymentMethod);
     setDate(new Date(item.date).toISOString().split('T')[0]);
-    setReceiptFile(null); setReceiptPreviewUrl(item.receiptImage || ''); setShowModal(true);
+    setReceiptFile(null); setReceiptPreviewUrl(item.receiptImage || ''); 
+    setIsRecurring(item.isRecurring || false); setRecurrence(item.recurrence || 'none');
+    setShowModal(true);
   };
 
   const handleFileChange = (e) => {
@@ -119,6 +125,8 @@ export default function Expenses() {
     formData.append('description', description);
     formData.append('paymentMethod', paymentMethod);
     formData.append('date', date);
+    formData.append('isRecurring', isRecurring);
+    formData.append('recurrence', recurrence);
     if (receiptFile) formData.append('receipt', receiptFile);
     else if (editingId && receiptPreviewUrl) formData.append('receiptImage', receiptPreviewUrl);
 
@@ -336,7 +344,14 @@ export default function Expenses() {
                               <span className="text-base">{catIcon}</span>
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-slate-800 dark:text-white text-sm truncate max-w-[130px]">{item.merchant}</p>
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-bold text-slate-800 dark:text-white text-sm truncate max-w-[130px]">{item.merchant}</p>
+                                {item.isRecurring && (
+                                  <span className="inline-flex items-center text-[9px] px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-100 dark:border-indigo-900/30" title={`Recurring ${item.recurrence}`}>
+                                    🔁 {item.recurrence}
+                                  </span>
+                                )}
+                              </div>
                               {item.description && <p className="text-[10px] text-slate-400 truncate max-w-[130px]">{item.description}</p>}
                             </div>
                           </div>
@@ -473,6 +488,35 @@ export default function Expenses() {
                 <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Date</label>
                 <input type="date" required value={date} onChange={e => setDate(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/40 outline-none transition-all" />
+              </div>
+
+              {/* Recurring Switch & Frequency */}
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={isRecurring} onChange={e => {
+                    setIsRecurring(e.target.checked);
+                    if (e.target.checked && recurrence === 'none') {
+                      setRecurrence('monthly');
+                    } else if (!e.target.checked) {
+                      setRecurrence('none');
+                    }
+                  }} className="w-4 h-4 rounded text-primary focus:ring-primary/40" />
+                  <div>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Recurring Subscription / Bill</span>
+                    <span className="text-[10px] text-slate-400 block">Create entry automatically at interval</span>
+                  </div>
+                </label>
+
+                {isRecurring && (
+                  <div className="pt-2 border-t border-slate-200/40 dark:border-slate-700/40 flex items-center justify-between">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Frequency:</span>
+                    <select value={recurrence} onChange={e => setRecurrence(e.target.value)}
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-800 dark:text-slate-200 focus:ring-1 focus:ring-primary outline-none">
+                      <option value="weekly">Every Week</option>
+                      <option value="monthly">Every Month</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {/* Description */}

@@ -97,7 +97,7 @@ async function checkBudgetAlerts(userId) {
 // @desc    Create an expense
 // @access  Private
 router.post('/', [auth, upload.single('receipt')], async (req, res) => {
-  const { amount, merchant, category, description, paymentMethod, date } = req.body;
+  const { amount, merchant, category, description, paymentMethod, date, isRecurring, recurrence } = req.body;
 
   try {
     let receiptImage = '';
@@ -115,6 +115,8 @@ router.post('/', [auth, upload.single('receipt')], async (req, res) => {
       description: description || '',
       paymentMethod: paymentMethod || 'Cash',
       receiptImage: receiptImage,
+      isRecurring: isRecurring === 'true' || isRecurring === true,
+      recurrence: recurrence || 'none',
       date: date ? new Date(date) : new Date()
     });
 
@@ -146,7 +148,7 @@ router.get('/', auth, async (req, res) => {
 // @desc    Update an expense
 // @access  Private
 router.put('/:id', [auth, upload.single('receipt')], async (req, res) => {
-  const { amount, merchant, category, description, paymentMethod, date } = req.body;
+  const { amount, merchant, category, description, paymentMethod, date, isRecurring, recurrence } = req.body;
 
   try {
     let expense = await Expense.findById(req.params.id);
@@ -168,6 +170,8 @@ router.put('/:id', [auth, upload.single('receipt')], async (req, res) => {
       description: description !== undefined ? description : expense.description,
       paymentMethod: paymentMethod || expense.paymentMethod,
       receiptImage: receiptImage,
+      isRecurring: isRecurring !== undefined ? (isRecurring === 'true' || isRecurring === true) : expense.isRecurring,
+      recurrence: recurrence !== undefined ? recurrence : expense.recurrence,
       date: date ? new Date(date) : expense.date
     };
 

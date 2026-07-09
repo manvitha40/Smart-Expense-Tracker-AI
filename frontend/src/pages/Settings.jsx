@@ -23,6 +23,10 @@ export default function Settings() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // CSV Import state
+  const [importFile, setImportFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+
   // Initial Sync
   useEffect(() => {
     if (user) {
@@ -73,6 +77,29 @@ export default function Settings() {
       setConfirmPassword('');
     } catch (err) {
       toast.error('Failed to change password');
+    }
+  };
+
+  const handleImportCSV = async (e) => {
+    e.preventDefault();
+    if (!importFile) return toast.error('Please select a CSV file first');
+
+    const formData = new FormData();
+    formData.append('file', importFile);
+
+    setImporting(true);
+    const toastId = toast.loading('Uploading and categorizing bank statement items...');
+    try {
+      const res = await axios.post('/api/import/csv', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast.success(res.data.msg || 'Statement imported successfully!', { id: toastId });
+      setImportFile(null);
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Import failed';
+      toast.error(errorMsg, { id: toastId });
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -307,6 +334,42 @@ export default function Settings() {
             >
               Update Password
             </button>
+          </form>
+
+          {/* CSV Bank Statement Import Card */}
+          <form onSubmit={handleImportCSV} className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-3xl p-6 shadow-premium space-y-4 mt-6">
+            <h3 className="font-extrabold text-base text-slate-800 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <Coins size={18} className="text-primary" />
+              <span>Import Statement</span>
+            </h3>
+            
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              Upload your bank statement in **.csv** format. AI will parse your log history and categorize your spending automatically!
+            </p>
+
+            <div className="space-y-3">
+              <label className="cursor-pointer border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-primary/50 transition-colors rounded-2xl p-4 flex flex-col items-center justify-center text-center gap-2 bg-slate-50 dark:bg-slate-800/40">
+                <span className="text-2xl">📊</span>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                  {importFile ? importFile.name : 'Select statement file'}
+                </span>
+                <span className="text-[10px] text-slate-400">Accepts columns: date, payee, amount</span>
+                <input 
+                  type="file" 
+                  accept=".csv" 
+                  className="hidden" 
+                  onChange={e => setImportFile(e.target.files[0])} 
+                />
+              </label>
+
+              <button
+                type="submit"
+                disabled={importing || !importFile}
+                className="w-full py-2.5 bg-primary hover:bg-primary-dark disabled:opacity-50 text-white rounded-xl font-bold shadow-md transition-all text-xs flex items-center justify-center gap-1.5"
+              >
+                {importing ? 'Processing...' : 'Upload & Categorize'}
+              </button>
+            </div>
           </form>
         </div>
 
