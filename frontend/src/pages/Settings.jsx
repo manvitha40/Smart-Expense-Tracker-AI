@@ -353,7 +353,7 @@ export default function Settings() {
                   setEmailSending('budget');
                   try {
                     const { data } = await axios.post('/api/email-notifications/test-email', {}, {
-                      headers: { 'x-auth-token': localStorage.getItem('token') }
+                      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     });
                     toast.success(data.msg);
                   } catch (err) {
@@ -373,7 +373,7 @@ export default function Settings() {
                   setEmailSending('weekly');
                   try {
                     const { data } = await axios.post('/api/email-notifications/send-weekly', {}, {
-                      headers: { 'x-auth-token': localStorage.getItem('token') }
+                      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     });
                     toast.success(data.msg);
                   } catch (err) {

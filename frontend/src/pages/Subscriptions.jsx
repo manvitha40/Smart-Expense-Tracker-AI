@@ -22,7 +22,7 @@ export default function Subscriptions() {
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
 
   const token = localStorage.getItem('token');
-  const headers = { 'x-auth-token': token };
+  const headers = { 'Authorization': `Bearer ${token}` };
 
   const fetchSubs = async () => {
     try {

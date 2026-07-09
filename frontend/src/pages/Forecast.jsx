@@ -16,7 +16,7 @@ export default function Forecast() {
   const [customEmi, setCustomEmi] = useState(0); // custom monthly deduction (e.g. EMI)
 
   const token = localStorage.getItem('token');
-  const headers = { 'x-auth-token': token };
+  const headers = { 'Authorization': `Bearer ${token}` };
 
   const fetchForecast = async () => {
     try {

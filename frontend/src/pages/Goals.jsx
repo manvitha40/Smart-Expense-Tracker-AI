@@ -15,7 +15,7 @@ export default function Goals() {
   const [form, setForm] = useState({ title: '', targetAmount: '', deadline: '', icon: '🎯', color: '#0D9488' });
 
   const token = localStorage.getItem('token');
-  const headers = { 'x-auth-token': token };
+  const headers = { 'Authorization': `Bearer ${token}` };
 
   const fetchGoals = async () => {
     try {

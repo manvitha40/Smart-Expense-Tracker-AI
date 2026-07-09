@@ -18,7 +18,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState('overview');
 
   const token = localStorage.getItem('token');
-  const headers = { 'x-auth-token': token };
+  const headers = { 'Authorization': `Bearer ${token}` };
 
   const fetchStats = async () => {
     try {
