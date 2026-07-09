@@ -14,6 +14,30 @@ export default function Login() {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [reseeding, setReseeding] = useState(false);
+
+  const handleReseed = async () => {
+    setReseeding(true);
+    const toastId = toast.loading('Reseeding demo database with 6 months of data...');
+    try {
+      const response = await fetch('/api/init/seed-demo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.msg || 'Demo data re-seeded successfully!', { id: toastId });
+      } else {
+        toast.error(data.error || 'Failed to reseed database', { id: toastId });
+      }
+    } catch (err) {
+      toast.error('Failed to connect to backend service', { id: toastId });
+    } finally {
+      setReseeding(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -125,10 +149,21 @@ export default function Login() {
           </form>
 
           {/* Seed Shortcut Alert */}
-          <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+          <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-2">
             <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-relaxed">
               💡 <strong>Demo Account:</strong> Try logging in with <code>demo@example.com</code> and <code>password123</code> to view seeded chart data.
             </p>
+            <div className="pt-1.5 flex items-center justify-between border-t border-slate-200/40 dark:border-slate-700/40">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Data modified or missing?</span>
+              <button
+                type="button"
+                onClick={handleReseed}
+                disabled={reseeding}
+                className="text-xs font-bold text-primary hover:underline flex items-center gap-1 disabled:opacity-50"
+              >
+                {reseeding ? 'Reseeding...' : '🔄 Reseed Demo Data'}
+              </button>
+            </div>
           </div>
 
           <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">

@@ -8,7 +8,10 @@ const { connectDB } = require('./config/db');
 const app = express();
 
 // Connect to Database (with JSON fallback)
-connectDB();
+connectDB().then(() => {
+  const { seedDemoData } = require('./controllers/initController');
+  seedDemoData(false);
+});
 
 // Middleware
 app.use(cors());
@@ -29,6 +32,7 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/goals', require('./routes/goals'));
 app.use('/api/subscriptions', require('./routes/subscriptions'));
+app.use('/api/init', require('./routes/init'));
 
 // Root Route
 app.get('/', (req, res) => {

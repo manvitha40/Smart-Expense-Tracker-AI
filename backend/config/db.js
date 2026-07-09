@@ -19,7 +19,8 @@ function initLocalJsonDb() {
       expenses: [],
       categories: [],
       budgets: [],
-      notifications: []
+      notifications: [],
+      goals: []
     };
     fs.writeFileSync(JSON_DB_PATH, JSON.stringify(initialData, null, 2));
   }
@@ -34,7 +35,7 @@ const jsonDb = {
       return JSON.parse(data);
     } catch (err) {
       console.error('Error reading JSON DB, resetting:', err);
-      const initialData = { users: [], incomes: [], expenses: [], categories: [], budgets: [], notifications: [] };
+      const initialData = { users: [], incomes: [], expenses: [], categories: [], budgets: [], notifications: [], goals: [] };
       fs.writeFileSync(JSON_DB_PATH, JSON.stringify(initialData, null, 2));
       return initialData;
     }
@@ -108,7 +109,7 @@ const ExpenseSchema = new mongoose.Schema({
 const CategorySchema = new mongoose.Schema({
   userId: { type: String, required: true }, // User specific or 'system'
   name: { type: String, required: true },
-  color: { type: String, default: '#4F46E5' },
+  color: { type: String, default: '#0D9488' },
   icon: { type: String, default: 'Tag' }
 });
 
@@ -128,6 +129,17 @@ const NotificationSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+const GoalSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, required: true },
+  targetAmount: { type: Number, required: true },
+  savedAmount: { type: Number, default: 0 },
+  deadline: { type: Date, default: null },
+  icon: { type: String, default: '🎯' },
+  color: { type: String, default: '#0D9488' },
+  createdAt: { type: Date, default: Date.now }
+});
+
 // Mongoose Models
 const MongoUser = mongoose.model('User', UserSchema);
 const MongoIncome = mongoose.model('Income', IncomeSchema);
@@ -135,6 +147,7 @@ const MongoExpense = mongoose.model('Expense', ExpenseSchema);
 const MongoCategory = mongoose.model('Category', CategorySchema);
 const MongoBudget = mongoose.model('Budget', BudgetSchema);
 const MongoNotification = mongoose.model('Notification', NotificationSchema);
+const MongoGoal = mongoose.model('Goal', GoalSchema);
 
 // Local JSON DB Model Implementation wrapper (mimics MongoDB Mongoose API)
 class LocalModelWrapper {
@@ -298,6 +311,7 @@ const Expense = new LocalModelWrapper('expenses', MongoExpense);
 const Category = new LocalModelWrapper('categories', MongoCategory);
 const Budget = new LocalModelWrapper('budgets', MongoBudget);
 const Notification = new LocalModelWrapper('notifications', MongoNotification);
+const Goal = new LocalModelWrapper('goals', MongoGoal);
 
 module.exports = {
   connectDB,
@@ -307,5 +321,6 @@ module.exports = {
   Category,
   Budget,
   Notification,
+  Goal,
   getUseLocalJsonDb: () => useLocalJsonDb
 };

@@ -1,112 +1,98 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { User } = require('../config/db');
-const fs = require('fs');
-const path = require('path');
-
-// Helper to read/write goals from JSON db
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const GOALS_FILE = path.join(DATA_DIR, 'goals.json');
-
-function readGoals() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(GOALS_FILE)) fs.writeFileSync(GOALS_FILE, '[]');
-  try {
-    return JSON.parse(fs.readFileSync(GOALS_FILE, 'utf8'));
-  } catch { return []; }
-}
-
-function writeGoals(goals) {
-  fs.writeFileSync(GOALS_FILE, JSON.stringify(goals, null, 2));
-}
-
-function generateId() {
-  return [...Array(24)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-}
+const { Goal } = require('../config/db');
 
 // GET all goals for user
-router.get('/', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
-    const goals = readGoals().filter(g => g.userId === req.user.id);
+    const goals = await Goal.find({ userId: req.user.id });
     res.json(goals);
   } catch (err) {
+    console.error('Get goals error:', err.message);
     res.status(500).send('Server error');
   }
 });
 
 // POST create a new goal
-router.post('/', auth, (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { title, targetAmount, deadline, icon, color } = req.body;
   if (!title || !targetAmount) return res.status(400).json({ msg: 'Title and target amount required' });
 
   try {
-    const goals = readGoals();
-    const newGoal = {
-      _id: generateId(),
+    const newGoal = await Goal.create({
       userId: req.user.id,
       title,
       targetAmount: Number(targetAmount),
       savedAmount: 0,
-      deadline: deadline || null,
+      deadline: deadline ? new Date(deadline) : null,
       icon: icon || '🎯',
-      color: color || '#0D9488',
-      createdAt: new Date().toISOString()
-    };
-    goals.push(newGoal);
-    writeGoals(goals);
+      color: color || '#0D9488'
+    });
     res.json(newGoal);
   } catch (err) {
+    console.error('Create goal error:', err.message);
     res.status(500).send('Server error');
   }
 });
 
 // PUT add savings to a goal
-router.put('/:id/contribute', auth, (req, res) => {
+router.put('/:id/contribute', auth, async (req, res) => {
   const { amount } = req.body;
-  try {
-    const goals = readGoals();
-    const idx = goals.findIndex(g => g._id === req.params.id && g.userId === req.user.id);
-    if (idx === -1) return res.status(404).json({ msg: 'Goal not found' });
+  const contribution = Number(amount);
+  if (isNaN(contribution) || contribution <= 0) {
+    return res.status(400).json({ msg: 'Invalid contribution amount' });
+  }
 
-    goals[idx].savedAmount = Math.min(goals[idx].targetAmount, goals[idx].savedAmount + Number(amount));
-    writeGoals(goals);
-    res.json(goals[idx]);
+  try {
+    const goal = await Goal.findById(req.params.id);
+    if (!goal) return res.status(404).json({ msg: 'Goal not found' });
+    if (goal.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+    const newSavedAmount = Math.min(goal.targetAmount, goal.savedAmount + contribution);
+    const updated = await Goal.findByIdAndUpdate(req.params.id, { savedAmount: newSavedAmount }, { new: true });
+    res.json(updated);
   } catch (err) {
+    console.error('Contribute goal error:', err.message);
     res.status(500).send('Server error');
   }
 });
 
 // PUT update a goal
-router.put('/:id', auth, (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   const { title, targetAmount, savedAmount, deadline, icon, color } = req.body;
   try {
-    const goals = readGoals();
-    const idx = goals.findIndex(g => g._id === req.params.id && g.userId === req.user.id);
-    if (idx === -1) return res.status(404).json({ msg: 'Goal not found' });
+    const goal = await Goal.findById(req.params.id);
+    if (!goal) return res.status(404).json({ msg: 'Goal not found' });
+    if (goal.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
 
-    if (title !== undefined) goals[idx].title = title;
-    if (targetAmount !== undefined) goals[idx].targetAmount = Number(targetAmount);
-    if (savedAmount !== undefined) goals[idx].savedAmount = Number(savedAmount);
-    if (deadline !== undefined) goals[idx].deadline = deadline;
-    if (icon !== undefined) goals[idx].icon = icon;
-    if (color !== undefined) goals[idx].color = color;
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (targetAmount !== undefined) updates.targetAmount = Number(targetAmount);
+    if (savedAmount !== undefined) updates.savedAmount = Number(savedAmount);
+    if (deadline !== undefined) updates.deadline = deadline ? new Date(deadline) : null;
+    if (icon !== undefined) updates.icon = icon;
+    if (color !== undefined) updates.color = color;
 
-    writeGoals(goals);
-    res.json(goals[idx]);
+    const updated = await Goal.findByIdAndUpdate(req.params.id, updates, { new: true });
+    res.json(updated);
   } catch (err) {
+    console.error('Update goal error:', err.message);
     res.status(500).send('Server error');
   }
 });
 
 // DELETE a goal
-router.delete('/:id', auth, (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
-    const goals = readGoals();
-    const filtered = goals.filter(g => !(g._id === req.params.id && g.userId === req.user.id));
-    writeGoals(filtered);
+    const goal = await Goal.findById(req.params.id);
+    if (!goal) return res.status(404).json({ msg: 'Goal not found' });
+    if (goal.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+    await Goal.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Goal removed' });
   } catch (err) {
+    console.error('Delete goal error:', err.message);
     res.status(500).send('Server error');
   }
 });
