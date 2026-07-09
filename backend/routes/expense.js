@@ -152,7 +152,7 @@ router.put('/:id', [auth, upload.single('receipt')], async (req, res) => {
     let expense = await Expense.findById(req.params.id);
     if (!expense) return res.status(404).json({ msg: 'Expense not found' });
 
-    if (expense.userId !== req.user.id) {
+    if (String(expense.userId) !== String(req.user.id)) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
@@ -191,7 +191,7 @@ router.delete('/:id', auth, async (req, res) => {
     let expense = await Expense.findById(req.params.id);
     if (!expense) return res.status(404).json({ msg: 'Expense not found' });
 
-    if (expense.userId !== req.user.id) {
+    if (String(expense.userId) !== String(req.user.id)) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 

@@ -43,7 +43,7 @@ router.put('/:id', auth, async (req, res) => {
   try {
     let category = await Category.findById(req.params.id);
     if (!category) return res.status(404).json({ msg: 'Category not found' });
-    if (category.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+    if (String(category.userId) !== String(req.user.id)) return res.status(401).json({ msg: 'Not authorized' });
 
     const updates = {
       name: name || category.name,
@@ -66,7 +66,7 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) return res.status(404).json({ msg: 'Category not found' });
-    if (category.userId !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+    if (String(category.userId) !== String(req.user.id)) return res.status(401).json({ msg: 'Not authorized' });
 
     await Category.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Category removed' });
